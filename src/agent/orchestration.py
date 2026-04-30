@@ -12,6 +12,8 @@ from src.agent.prompts import (
     WRITER_PROMPT,
 )
 from src.config import settings
+from src.tools import news_tool, stock_tool  # noqa: F401
+from src.tools.registry import registry
 
 
 class OrchestratorAgent:
@@ -19,11 +21,20 @@ class OrchestratorAgent:
 
     def __init__(self, model: str = None, max_steps: int = 10):
         resolved_model = model or settings.model_name
+        research_tools = [
+            tool
+            for tool in (
+                registry.get_tool("get_stock_data"),
+                registry.get_tool("get_news"),
+            )
+            if tool is not None
+        ]
         self.researcher = BaseAgent(
             model=resolved_model,
             max_steps=max_steps,
             agent_name="Researcher",
             system_prompt=RESEARCHER_PROMPT,
+            tools=research_tools,
         )
         self.analyst = BaseAgent(
             model=resolved_model,

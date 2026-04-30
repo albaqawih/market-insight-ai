@@ -55,7 +55,7 @@ class BaseAgent:
     @observe(name="agent_run", as_type="agent")
     async def run(self, user_query: str) -> dict:
         with propagate_attributes(metadata={"user_query": user_query}):
-            if not os.getenv("OPENAI_API_KEY"):
+            if not os.getenv("GOOGLE_API_KEY"):
                 answer = self._mock_answer(user_query)
                 return {
                     "answer": answer,
